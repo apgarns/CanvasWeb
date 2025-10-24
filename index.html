@@ -3,10 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>Very Simple Planner</title>
-  <!-- This page is all-in-one: HTML + CSS + JS -->
   <style>
-    /* super basic styles, nothing fancy */
-    body { font-family: Arial, sans-serif; margin: 20px; background:#f5f5f5; }
+    body { font-family: Arial, sans-serif; margin: 20px; background:#f5f5f5; color:#000; transition: all 0.3s; }
     h1 { margin-bottom: 10px; }
     .box { background:#ffffff; border:1px solid #ccc; padding:12px; margin-bottom:16px; }
     label { display:block; margin-top:8px; }
@@ -15,23 +13,25 @@
     ul { list-style: none; padding:0; }
     li { background:#fff; border:1px solid #ddd; padding:10px; margin-bottom:8px; }
     .meta { font-size: 12px; color:#666; }
+
+    /* Dark mode styles */
+    body.dark { background:#121212; color:#eee; }
+    body.dark .box { background:#1e1e1e; border-color:#333; }
+    body.dark li { background:#1e1e1e; border-color:#333; }
+    body.dark .meta { color:#aaa; }
   </style>
 </head>
 <body>
 
-  <!-- page title -->
-  <h1>Canvas Wev</h1>
+  <h1>My Simple Planner</h1>
+  <button id="darkModeBtn">Toggle Dark Mode</button>
 
-  <!-- a short description -->
   <div class="box">
-    <!-- normal comment: this is just a tiny demo -->
-    <p>This is a version of what canvas is going to automatically do, its going to grab all your class info and display due dates.</p>
+    <p>This is a very simple planner. Add a task with a due date and it shows up below.</p>
   </div>
 
-  <!-- the form to add things quickly -->
   <div class="box">
     <h2>Add Task</h2>
-    <!-- normal comment: the form has title, date, course, and a reminder checkbox -->
     <form id="form">
       <label for="title">Title</label>
       <input id="title" type="text" placeholder="Read Chapter 3" required>
@@ -42,38 +42,36 @@
       <label for="course">Course (optional)</label>
       <input id="course" type="text" placeholder="CS 201">
 
-      <label>
-        <input id="reminder" type="checkbox"> Add a reminder
-      </label>
-
+      <label><input id="reminder" type="checkbox"> Add a reminder</label>
       <button type="submit">Add</button>
     </form>
   </div>
 
-  <!-- where the tasks will appear -->
   <div class="box">
     <h2>Tasks</h2>
-    <!-- normal comment: items are inserted here -->
     <ul id="list"></ul>
   </div>
 
   <script>
-    // get references to things on the page
     var form = document.getElementById('form');
     var list = document.getElementById('list');
     var titleInput = document.getElementById('title');
     var dueInput = document.getElementById('due');
     var courseInput = document.getElementById('course');
     var reminderInput = document.getElementById('reminder');
+    var darkBtn = document.getElementById('darkModeBtn');
 
-    // normal comment: make a simple list item
+    // toggle dark mode
+    darkBtn.addEventListener('click', function() {
+      document.body.classList.toggle('dark');
+    });
+
     function makeItem(obj) {
       var li = document.createElement('li');
       var top = document.createElement('div');
       top.textContent = obj.title;
       var meta = document.createElement('div');
       meta.className = 'meta';
-      // show date and course if provided
       var parts = [];
       parts.push('Due: ' + obj.due);
       if (obj.course) parts.push('Course: ' + obj.course);
@@ -84,12 +82,10 @@
       return li;
     }
 
-    // normal comment: add some small demo items at the start
     function addDemo() {
       var today = new Date();
       function plusDays(d){ var t=new Date(today); t.setDate(t.getDate()+d); return t; }
       function fmt(d){ return d.toISOString().slice(0,10); }
-
       var demo = [
         { title: 'Syllabus Quiz', due: fmt(plusDays(2)), course: 'BIO 110', reminder: false },
         { title: 'Lab 1 Pre-Write', due: fmt(plusDays(5)), course: 'CHEM 121', reminder: true },
@@ -98,27 +94,19 @@
       demo.forEach(function(x){ list.appendChild(makeItem(x)); });
     }
 
-    // normal comment: when the form is submitted, add a new item
     form.addEventListener('submit', function(evt) {
-      evt.preventDefault(); // stop page refresh
+      evt.preventDefault();
       var title = titleInput.value.trim();
       var due = dueInput.value;
       var course = courseInput.value.trim();
       var reminder = reminderInput.checked;
-
-      // check
       if (!title || !due) return;
-
-      // create object and add to top of the list
       var obj = { title: title, due: due, course: course, reminder: reminder };
       list.insertBefore(makeItem(obj), list.firstChild);
-
-      // clear the form and focus title again
       form.reset();
       titleInput.focus();
     });
 
-    // run once when page loads
     addDemo();
   </script>
 </body>
